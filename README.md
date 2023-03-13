@@ -2,6 +2,8 @@
 
 这个JS程序能够将ChatGPT的聊天记录导出为Markdown文件。
 
+### **[示例](example.md)**
+
 ## 程序功能
 这个程序包含一个名为`convertHtmlToMarkdown`的函数，它将HTML元素转换为Markdown格式的字符串。该函数支持以下HTML标签的转换：
 
@@ -17,6 +19,8 @@
 * `ul`: 无序列表
 * `code`: 行内代码
 * `table`: 表格
+* `blockquote`: 引用
+* `hr`: 分隔线
 
 此外，该程序还包含一个自执行函数，用于将ChatGPT的聊天记录转换为Markdown格式的字符串，并下载为`.md`文件。
 

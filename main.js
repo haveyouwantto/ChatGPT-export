@@ -2,8 +2,8 @@ function convertHtmlToMarkdown(element) {
     if (element == null) return;
     const rules = {
         p: (match) => convertHtmlToMarkdown(match) + '\n\n',
-        b: (match) => `**${match.innerText}**`,
-        i: (match) => `_${match.innerText}_`,
+        strong: (match) => `**${convertHtmlToMarkdown(match)}**`,
+        em: (match) => `_${convertHtmlToMarkdown(match)}_`,
         pre: (match) => {
             let language = match.querySelector('span').innerText;
             let content = match.querySelector('.p-4').innerText;
@@ -15,7 +15,7 @@ function convertHtmlToMarkdown(element) {
                 + "```\n"
         },
         a: (match) => `[${match.innerText}](${match.href})`,
-        img: (match) => `[${match.innerText}](${match.src})`,
+        img: (match) => `![${match.getAttribute('alt')}](${match.src})`,
         br: (match) => match.innerText + '\n',
         ol: (match) => {
             let text = [];
@@ -26,7 +26,7 @@ function convertHtmlToMarkdown(element) {
                 i++;
             }
             return text.join('\n') + '\n';
-        }, 
+        },
         ul: (match) => {
             let text = [];
             let i = parseInt(match.getAttribute('start'));
@@ -43,7 +43,7 @@ function convertHtmlToMarkdown(element) {
             let head = match.querySelector('thead');
             let columns = head.querySelectorAll('th')
             columns.forEach(element => {
-                headText += element.innerText + '|'
+                headText += convertHtmlToMarkdown(element) + '|'
             });
             text.push(headText)
 
@@ -65,12 +65,14 @@ function convertHtmlToMarkdown(element) {
             })
             return text.join('\n')
         },
-        h1: (match) => `# ${match.innerText}\n\n`,
-        h2: (match) => `## ${match.innerText}\n\n`,
-        h3: (match) => `### ${match.innerText}\n\n`,
-        h4: (match) => `#### ${match.innerText}\n\n`,
-        h5: (match) => `##### ${match.innerText}\n\n`,
-        h6: (match) => `###### ${match.innerText}\n\n`,
+        h1: (match) => `# ${convertHtmlToMarkdown(match)}\n\n`,
+        h2: (match) => `## ${convertHtmlToMarkdown(match)}\n\n`,
+        h3: (match) => `### ${convertHtmlToMarkdown(match)}\n\n`,
+        h4: (match) => `#### ${convertHtmlToMarkdown(match)}\n\n`,
+        h5: (match) => `##### ${convertHtmlToMarkdown(match)}\n\n`,
+        h6: (match) => `###### ${convertHtmlToMarkdown(match)}\n\n`,
+        blockquote: (match) => "> " + convertHtmlToMarkdown(match) + '\n\n',
+        hr: () => "---\n"
     };
 
     let markdown = '';
@@ -98,7 +100,7 @@ function convertHtmlToMarkdown(element) {
 
 (() => {
     const messages = Array.from(document.querySelectorAll(".text-base")).map(message => {
-        const isUser = message.querySelector('img');
+        const isUser = !message.querySelector(".markdown");
         const sender = isUser ? 'User' : 'ChatGPT';
         let text;
         if (isUser) {
